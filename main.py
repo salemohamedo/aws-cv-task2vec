@@ -21,7 +21,7 @@ import logging
 from task2vec.datasets import get_dataset
 from task2vec.models import get_model
 
-from task2vec import Task2Vec
+from task2vec.task2vec import Task2Vec
 from omegaconf import DictConfig, OmegaConf
 
 
