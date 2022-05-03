@@ -15,14 +15,15 @@ without an expensive brute force search.
 ## Quick start
 
 To compute and embedding using task2vec, you just need to provide a dataset and a probe network, for example:
+
 ```python
 from task2vec import Task2Vec
-from models import get_model
-from datasets import get_dataset
+from task2vec.models import get_model
+from task2vec.datasets import get_dataset
 
 dataset = get_dataset('cifar10')
 probe_network = get_model('resnet34', pretrained=True, num_classes=10)
-embedding =  Task2Vec(probe_network).embed(dataset)
+embedding = Task2Vec(probe_network).embed(dataset)
 ```
 Task2Vec uses the diagonal of the Fisher Information Matrix to compute an embedding of the task. In this implementation
 we provide two methods, `montecarlo` and `variational`. The first is the fastest and is the default, but `variational`
@@ -31,20 +32,19 @@ may be more robust in some situations (in particular it is the one used in the p
 task2vec.embed(dataset, probe_network, method='variational')
 ```  
 Now, let's try computing several embedding and plot the distance matrix between the tasks:
+
 ```python
-from task2vec import Task2Vec
-from models import get_model
-import datasets
-import task_similarity
+from task2vec import Task2Vec, datasets, task_similarity
+from task2vec.models import get_model
 
 dataset_names = ('mnist', 'cifar10', 'cifar100', 'letters', 'kmnist')
-dataset_list = [datasets.__dict__[name]('./data')[0] for name in dataset_names] 
+dataset_list = [datasets.__dict__[name]('./data')[0] for name in dataset_names]
 
 embeddings = []
 for name, dataset in zip(dataset_names, dataset_list):
     print(f"Embedding {name}")
-    probe_network = get_model('resnet34', pretrained=True, num_classes=int(max(dataset.targets)+1)).cuda()
-    embeddings.append( Task2Vec(probe_network, max_samples=1000, skip_layers=6).embed(dataset) )
+    probe_network = get_model('resnet34', pretrained=True, num_classes=int(max(dataset.targets) + 1)).cuda()
+    embeddings.append(Task2Vec(probe_network, max_samples=1000, skip_layers=6).embed(dataset))
 task_similarity.plot_distance_matrix(embeddings, dataset_names)
 ```
 You can also look at the notebook `small_datasets_example.ipynb` for a runnable implementation of this code snippet.
